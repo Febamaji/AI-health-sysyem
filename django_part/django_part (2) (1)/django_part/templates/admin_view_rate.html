@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CareTrack - Rate & Review Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #3498db;
+            --primary-light: #5dade2;
+            --secondary: #2c3e50;
+            --secondary-light: #34495e;
+            --accent: #e74c3c;
+            --accent-light: #ec7063;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --gray: #7f8c8d;
+            --light-gray: #f5f7fa;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* Header Styles */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 0.8rem 2rem;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo {
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .logo-text h1 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+
+        .logo-text p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: background 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Main Content Layout */
+        .main-container {
+            display: flex;
+            min-height: calc(100vh - 80px);
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 280px;
+            background: white;
+            padding: 1.5rem;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+            height: calc(100vh - 80px);
+            position: sticky;
+            top: 80px;
+            overflow-y: auto;
+        }
+
+        .sidebar-title {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #eee;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1rem;
+            color: #555;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .sidebar-menu a:hover, .sidebar-menu a.active {
+            background: #f0f7ff;
+            color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        .sidebar-menu a i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+            color: var(--primary);
+        }
+
+        /* Content Area */
+        .content {
+            flex: 1;
+            padding: 2rem;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            color: var(--secondary);
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .page-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.7rem 1.2rem;
+            border: none;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: var(--secondary-light);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(44, 62, 80, 0.3);
+        }
+
+        /* Stats Cards */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon.reviews {
+            color: var(--primary);
+        }
+
+        .stat-icon.rating {
+            color: var(--warning);
+        }
+
+        .stat-icon.average {
+            color: var(--success);
+        }
+
+        .stat-info h3 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+        }
+
+        .stat-info p {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* Review Cards */
+        .reviews-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .review-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .review-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+
+        .review-header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .review-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .review-info h3 {
+            font-size: 1.3rem;
+            margin-bottom: 5px;
+        }
+
+        .review-info p {
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        .review-details {
+            padding: 1.5rem;
+        }
+
+        .detail-row {
+            display: flex;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .detail-row:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .detail-label {
+            flex: 1;
+            color: var(--gray);
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .detail-value {
+            flex: 2;
+            color: var(--dark);
+            font-size: 0.95rem;
+        }
+
+        .star-rating {
+            display: flex;
+            gap: 2px;
+        }
+
+        .star {
+            color: #ddd;
+            font-size: 1.2rem;
+        }
+
+        .star.filled {
+            color: #ffc107;
+        }
+
+        .review-text {
+            background: var(--light-gray);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 0.5rem;
+            font-style: italic;
+            border-left: 4px solid var(--primary);
+        }
+
+        .review-actions {
+            padding: 1rem 1.5rem;
+            background: #f9f9f9;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .action-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .action-btn.reply {
+            background: var(--primary);
+            color: white;
+        }
+
+        .action-btn.reply:hover {
+            background: var(--primary-light);
+        }
+
+        .action-btn.delete {
+            background: var(--accent);
+            color: white;
+        }
+
+        .action-btn.delete:hover {
+            background: var(--accent-light);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            grid-column: 1 / -1;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            color: var(--light-gray);
+            margin-bottom: 1.5rem;
+        }
+
+        .empty-state h3 {
+            color: var(--gray);
+            margin-bottom: 1rem;
+        }
+
+        .empty-state p {
+            color: var(--gray);
+            margin-bottom: 1.5rem;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 1024px) {
+            .reviews-container {
+                grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: static;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .reviews-container {
+                grid-template-columns: 1fr;
+            }
+
+            .review-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
+            }
+
+            .review-actions {
+                justify-content: center;
+            }
+
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+  {% include 'admin_header.html' %}
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Sidebar -->
+
+        <!-- Content Area -->
+        <main class="content">
+            <div class="page-header">
+                <h1 class="page-title">Ratings & Reviews</h1>
+                <div class="page-actions">
+
+                </div>
+            </div>
+
+            <!-- Stats Section -->
+            <div class="stats-container">
+                <div class="stat-card">
+                    <div class="stat-icon reviews">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>{{ total_reviews }}</h3>
+                        <p>Total Reviews</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon rating">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>{{ average_rating }}</h3>
+                        <p>Average Rating</p>
+                    </div>
+                </div>
+{#                <div class="stat-card">#}
+{#                    <div class="stat-icon average">#}
+{#                        <i class="fas fa-chart-line"></i>#}
+{#                    </div>#}
+{#                    <div class="stat-info">#}
+{#                        <h3>{{ this_month }}</h3>#}
+{#                        <p>This Month</p>#}
+{#                    </div>#}
+{#                </div>#}
+            </div>
+
+            <!-- Reviews Section -->
+            <div class="reviews-container">
+                {% if data %}
+                    {% for i in data %}
+                        <div class="review-card">
+                            <div class="review-header">
+                                <div class="review-avatar">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div class="review-info">
+                                    <h3>{{ i.FamilyMember.NAME }}</h3>
+                                    <p>Review #{{ i.id }}</p>
+                                </div>
+                            </div>
+                            <div class="review-details">
+                                <div class="detail-row">
+                                    <div class="detail-label">Review ID:</div>
+                                    <div class="detail-value">{{ i.id }}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Family Member:</div>
+                                    <div class="detail-value">{{ i.FamilyMember.NAME }}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Rating:</div>
+                                    <div class="detail-value">
+                                        <div class="star-rating">
+                                            {% for star in "12345" %}
+                                                {% if forloop.counter <= i.rate %}
+                                                    <span class="star filled">★</span>
+                                                {% else %}
+                                                    <span class="star">★</span>
+                                                {% endif %}
+                                            {% endfor %}
+                                            <span style="margin-left: 8px;">({{ i.rate }}/5)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Date:</div>
+                                    <div class="detail-value">{{ i.date }}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Review:</div>
+                                    <div class="detail-value">
+                                        <div class="review-text">
+                                            {{ i.review }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+{#                            <div class="review-actions">#}
+{#                                <button class="action-btn reply">#}
+{#                                    <i class="fas fa-reply"></i> Reply#}
+{#                                </button>#}
+{#                                <button class="action-btn delete">#}
+{#                                    <i class="fas fa-trash"></i> Delete#}
+{#                                </button>#}
+{#                            </div>#}
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <h3>No Reviews Found</h3>
+                        <p>There are currently no ratings or reviews in the system.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Logout button functionality
+        document.querySelector('.logout-btn').addEventListener('click', function() {
+            if(confirm('Are you sure you want to logout?')) {
+                alert('Logging out...');
+                // In a real application, this would redirect to logout endpoint
+                // window.location.href = '/logout';
+            }
+        });
+
+        // Reply button functionality
+        document.querySelectorAll('.action-btn.reply').forEach(button => {
+            button.addEventListener('click', function() {
+                const reviewerName = this.closest('.review-card').querySelector('h3').textContent;
+                alert(`Replying to review from ${reviewerName}`);
+            });
+        });
+
+        // Delete button functionality
+        document.querySelectorAll('.action-btn.delete').forEach(button => {
+            button.addEventListener('click', function() {
+                const reviewerName = this.closest('.review-card').querySelector('h3').textContent;
+                if(confirm(`Are you sure you want to delete the review from ${reviewerName}?`)) {
+                    alert(`Review from ${reviewerName} has been deleted`);
+                    // In a real application, this would make an API call to delete the review
+                }
+            });
+        });
+
+        // Export Reviews button functionality
+        document.querySelector('.btn-primary').addEventListener('click', function() {
+            alert('Exporting reviews data...');
+            // In a real application, this would trigger a download of reviews data
+        });
+
+        // Refresh button functionality
+        document.querySelector('.btn-secondary').addEventListener('click', function() {
+            alert('Refreshing reviews data...');
+            // In a real application, this would reload the page or refresh data
+            location.reload();
+        });
+
+        // Initialize star ratings
+        document.addEventListener('DOMContentLoaded', function() {
+            // This is handled by the Django template, but we can add additional client-side enhancements
+            console.log('Ratings and Reviews page loaded successfully');
+        });
+    </script>
+</body>
+</html>

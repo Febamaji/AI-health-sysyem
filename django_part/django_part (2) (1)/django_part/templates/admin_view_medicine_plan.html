@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CareTrack - Medicine Plan Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #3498db;
+            --primary-light: #5dade2;
+            --secondary: #2c3e50;
+            --secondary-light: #34495e;
+            --accent: #e74c3c;
+            --accent-light: #ec7063;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --gray: #7f8c8d;
+            --light-gray: #f5f7fa;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* Header Styles */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 0.8rem 2rem;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo {
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .logo-text h1 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+
+        .logo-text p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: background 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Main Content Layout */
+        .main-container {
+            display: flex;
+            min-height: calc(100vh - 80px);
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 280px;
+            background: white;
+            padding: 1.5rem;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+            height: calc(100vh - 80px);
+            position: sticky;
+            top: 80px;
+            overflow-y: auto;
+        }
+
+        .sidebar-title {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #eee;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1rem;
+            color: #555;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .sidebar-menu a:hover, .sidebar-menu a.active {
+            background: #f0f7ff;
+            color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        .sidebar-menu a i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+            color: var(--primary);
+        }
+
+        /* Content Area */
+        .content {
+            flex: 1;
+            padding: 2rem;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            color: var(--secondary);
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .page-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.7rem 1.2rem;
+            border: none;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: var(--secondary-light);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(44, 62, 80, 0.3);
+        }
+
+        /* Medicine Plan Cards */
+        .plans-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .plan-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .plan-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+
+        .plan-header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .plan-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+        }
+
+        .plan-info h3 {
+            font-size: 1.4rem;
+            margin-bottom: 5px;
+        }
+
+        .plan-info p {
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        .plan-details {
+            padding: 1.5rem;
+        }
+
+        .detail-row {
+            display: flex;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .detail-row:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .detail-label {
+            flex: 1;
+            color: var(--gray);
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .detail-value {
+            flex: 2;
+            color: var(--dark);
+            font-size: 0.95rem;
+        }
+
+        .days-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .day-pill {
+            background: var(--light);
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            color: var(--dark);
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: #d4edda;
+            color: var(--success);
+        }
+
+        .status-upcoming {
+            background: #fff3cd;
+            color: var(--warning);
+        }
+
+        .status-completed {
+            background: #f8d7da;
+            color: var(--accent);
+        }
+
+        .plan-actions {
+            padding: 1rem 1.5rem;
+            background: #f9f9f9;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .action-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .action-btn.edit {
+            background: var(--warning);
+            color: white;
+        }
+
+        .action-btn.edit:hover {
+            background: #f4b350;
+        }
+
+        .action-btn.delete {
+            background: var(--accent);
+            color: white;
+        }
+
+        .action-btn.delete:hover {
+            background: var(--accent-light);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            grid-column: 1 / -1;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            color: var(--light-gray);
+            margin-bottom: 1.5rem;
+        }
+
+        .empty-state h3 {
+            color: var(--gray);
+            margin-bottom: 1rem;
+        }
+
+        .empty-state p {
+            color: var(--gray);
+            margin-bottom: 1.5rem;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 1024px) {
+            .plans-container {
+                grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: static;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .plans-container {
+                grid-template-columns: 1fr;
+            }
+
+            .plan-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
+            }
+
+            .plan-actions {
+                justify-content: center;
+            }
+
+            .days-list {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+  {% include 'admin_header.html' %}
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Sidebar -->
+
+        <!-- Content Area -->
+        <main class="content">
+            <div class="page-header">
+                <h1 class="page-title">Medicine Plan Management</h1>
+                <div class="page-actions">
+
+                </div>
+            </div>
+
+            <div class="plans-container">
+                {% if data %}
+                    {% for i in data %}
+                        <div class="plan-card">
+                            <div class="plan-header">
+                                <div class="plan-icon">
+                                    <i class="fas fa-calendar-check"></i>
+                                </div>
+                                <div class="plan-info">
+                                    <h3>Plan #{{ i.id }}</h3>
+                                    <p>
+                                        <!-- Status will be determined by your backend logic -->
+                                        <span class="status-badge status-active">Active</span>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="plan-details">
+                                <div class="detail-row">
+                                    <div class="detail-label">Plan ID:</div>
+                                    <div class="detail-value">{{ i.id }}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Dosage:</div>
+                                    <div class="detail-value">{{ i.dosage }}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Scheduled Time:</div>
+                                    <div class="detail-value">{{ i.scheduled_time }}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Frequency:</div>
+                                    <div class="detail-value">{{ i.frequency }}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Days of Week:</div>
+                                    <div class="detail-value">
+                                        <div class="days-list">
+                                            <!-- Simple display of days_of_week without splitting -->
+                                            <span class="day-pill">{{ i.days_of_week }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Start Date:</div>
+                                    <div class="detail-value">{{ i.start_date }}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">End Date:</div>
+                                    <div class="detail-value">{{ i.end_date }}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Instructions:</div>
+                                    <div class="detail-value">{{ i.instructions }}</div>
+                                </div>
+                            </div>
+                            <div class="plan-actions">
+
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <i class="fas fa-calendar-times"></i>
+                        </div>
+                        <h3>No Medicine Plans Found</h3>
+                        <p>There are currently no medicine plans scheduled in the system.</p>
+                        <button class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Create First Plan
+                        </button>
+                    </div>
+                {% endif %}
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Logout button functionality
+        document.querySelector('.logout-btn').addEventListener('click', function() {
+            if(confirm('Are you sure you want to logout?')) {
+                alert('Logging out...');
+                // In a real application, this would redirect to logout endpoint
+                // window.location.href = '/logout';
+            }
+        });
+
+        // Edit button functionality
+        document.querySelectorAll('.action-btn.edit').forEach(button => {
+            button.addEventListener('click', function() {
+                const planId = this.closest('.plan-card').querySelector('h3').textContent;
+                alert(`Editing ${planId}`);
+            });
+        });
+
+        // Delete button functionality
+        document.querySelectorAll('.action-btn.delete').forEach(button => {
+            button.addEventListener('click', function() {
+                const planId = this.closest('.plan-card').querySelector('h3').textContent;
+                if(confirm(`Are you sure you want to delete ${planId}?`)) {
+                    alert(`${planId} has been deleted`);
+                    // In a real application, this would make an API call to delete the plan
+                }
+            });
+        });
+
+        // Add New Plan button functionality
+        document.querySelectorAll('.btn-primary').forEach(button => {
+            button.addEventListener('click', function() {
+                alert('Opening form to create new medicine plan');
+                // In a real application, this would open a form or redirect to an add page
+            });
+        });
+
+        // Refresh button functionality
+        document.querySelector('.btn-secondary').addEventListener('click', function() {
+            alert('Refreshing medicine plan data...');
+            // In a real application, this would reload the page or refresh data
+            location.reload();
+        });
+
+        // Format days of week display - client-side processing
+        document.addEventListener('DOMContentLoaded', function() {
+            const dayPills = document.querySelectorAll('.day-pill');
+            dayPills.forEach(pill => {
+                const dayText = pill.textContent.trim();
+
+                // If days are comma-separated, split and format them
+                if (dayText.includes(',')) {
+                    const days = dayText.split(',');
+                    pill.innerHTML = ''; // Clear the original content
+
+                    days.forEach(day => {
+                        const trimmedDay = day.trim();
+                        if (trimmedDay) {
+                            const formattedDay = trimmedDay.charAt(0).toUpperCase() + trimmedDay.slice(1).toLowerCase();
+                            const daySpan = document.createElement('span');
+                            daySpan.className = 'day-pill';
+                            daySpan.textContent = formattedDay;
+                            daySpan.style.marginRight = '5px';
+                            daySpan.style.marginBottom = '5px';
+                            daySpan.style.display = 'inline-block';
+                            pill.appendChild(daySpan);
+                        }
+                    });
+                } else {
+                    // Single day - just capitalize it
+                    pill.textContent = dayText.charAt(0).toUpperCase() + dayText.slice(1).toLowerCase();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
