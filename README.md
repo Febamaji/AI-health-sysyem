@@ -124,6 +124,5 @@ This project is developed for academic purposes.
 
 ---
 
-## 🙌 Acknowledgment
-
-We would like to thank our guide and institution for their support and guidance throughout this project.
+## Acknowledgment
+We want to thank our guide (Mrs. Pretty Sebastian, Assistant Professor, CG) and the institution (Viswajyothi College of Engineering and Technology) for their support and guidance throughout this project.
